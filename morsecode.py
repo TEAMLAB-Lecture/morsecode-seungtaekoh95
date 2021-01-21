@@ -84,13 +84,8 @@ def is_validated_english_sentence(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = ''
-    for c in user_input:
-        if c.isalpha():
-            result += c
-        elif c not in ('.', ',', '!', '?', ' '):
-            return False
-    return True if result else False
+    temp = re.sub("[.,!? ]+", "", user_input)
+    return temp.isalpha()
     # ==================================
 
 
@@ -119,21 +114,7 @@ def is_validated_morse_code(user_input):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = True
-    user_input = user_input.split()
-    for string in user_input:
-        signal = ''
-        for c in string: 
-            if c in ('-', '.'):
-                signal += c
-            else:
-                result = False
-                break
-        if signal not in get_morse_code_dict().values():
-            result = False
-            break
- 
-    return result
+    return all([code in get_morse_code_dict().values() for code in user_input.split()])
     # ==================================
 
 
@@ -157,11 +138,8 @@ def get_cleaned_english_sentence(raw_english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = raw_english_sentence.strip()
-    marks = ['.', ',', '!', '?']
-    for mark in marks:
-        result = result.replace(mark, '')
-    return result
+    redundant_spaces_removed = re.sub("\\s+", " ", raw_english_sentence.strip())
+    return re.sub("[.,!?]+", "", redundant_spaces_removed)
     # ==================================
 
 
@@ -240,17 +218,8 @@ def decoding_sentence(morse_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    temp_decoding = morse_sentence.split("  ")
-    result = ""
-    for c in temp_decoding:
-        if ' ' in c:
-            word = c.split()
-            for w in word:
-                result += decoding_character(w)
-        else:
-            result += decoding_character(c)
-        result += ' '
-    return result.strip()
+    temp = re.sub("  ", " / ", morse_sentence)
+    return "".join(decoding_character(ch) if ch != "/" else " " for ch in temp.split())
     # ==================================
 
 
@@ -274,7 +243,6 @@ def encoding_sentence(english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    
     return " ".join(encoding_character(ch) if ch.isalpha() else "" for ch in get_cleaned_english_sentence(english_sentence.upper()))
     # ==================================
 
