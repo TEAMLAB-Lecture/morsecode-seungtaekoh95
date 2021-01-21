@@ -188,9 +188,9 @@ def decoding_character(morse_character):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    morse_code_dict2 = {v:k for k,v in get_morse_code_dict().items()}
-    result = morse_code_dict2[morse_character]
-    return result
+    morse_code_dict = get_morse_code_dict()
+    inverted = {value : key for key, value in morse_code_dict.items()}
+    return inverted[morse_character]
     # ==================================
 
 
@@ -217,10 +217,7 @@ def encoding_character(english_character):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    morse_code_dict = get_morse_code_dict()
-    result = morse_code_dict[english_character]
-
-    return result
+    return get_morse_code_dict()[english_character]
     # ==================================
 
 
@@ -243,15 +240,8 @@ def decoding_sentence(morse_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = []
-    word_list = morse_sentence.split('  ')
-    for morse_word in word_list:
-        tmp = ''
-        for morse_char in morse_word.split():
-            tmp+=decoding_character(morse_char)
-    result.append(tmp)
-
-    return ' '.join(result)
+    temp = re.sub("  ", " / ", morse_sentence)
+    return "".join(decoding_character(ch) if ch != "/" else " " for ch in temp.split())
     # ==================================
 
 
@@ -275,19 +265,8 @@ def encoding_sentence(english_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    result = ''
-    morse_code_dict = get_morse_code_dict()
-    cleaned_english_sentence = get_cleaned_english_sentence(english_sentence) + ' '
-
-    tmp = []
-    for char in cleaned_english_sentence:
-        if char.isalpha():
-            tmp.append(morse_code_dict[char.upper()])
-        elif tmp:
-            result += ' '.join(tmp) + '  '
-            tmp = []
-    result = result.rstrip()
-    return result
+    
+    return " ".join(encoding_character(ch) if ch.isalpha() else "" for ch in get_cleaned_english_sentence(english_sentence.upper()))
     # ==================================
 
 
@@ -295,18 +274,17 @@ def main():
     print("Morse Code Program!!")
     # ===Modify codes below=============
     user_input = ''
-    while user_input != '0':
+    while True:
         user_input = input("Input your message(H - Help, 0 - Exit)")
 
-        if user_input == '0':
-            continue
-        elif is_help_command(user_input):
+        if is_help_command(user_input):
             print(get_help_message())
-        
-        if is_validated_english_sentence(user_input):
+        elif is_validated_english_sentence(user_input):
             print(encoding_sentence(user_input))
         elif is_validated_morse_code(user_input):
             print(decoding_sentence(user_input))
+        elif user_input == '0':
+            break
         else:
             print("Wrong Input")
     # ==================================
