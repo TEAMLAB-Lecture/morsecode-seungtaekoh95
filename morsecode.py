@@ -240,8 +240,17 @@ def decoding_sentence(morse_sentence):
     """
     # ===Modify codes below=============
     # 조건에 따라 변환되어야 할 결과를 result 변수에 할당 또는 필요에 따라 자유로운 수정
-    temp = re.sub("  ", " / ", morse_sentence)
-    return "".join(decoding_character(ch) if ch != "/" else " " for ch in temp.split())
+    temp_decoding = morse_sentence.split("  ")
+    result = ""
+    for c in temp_decoding:
+        if ' ' in c:
+            word = c.split()
+            for w in word:
+                result += decoding_character(w)
+        else:
+            result += decoding_character(c)
+        result += ' '
+    return result.strip()
     # ==================================
 
 
